@@ -1,135 +1,240 @@
-# Work at Olist
+# Flask REST API CRUD
 
-[Olist](https://olist.com/) is a company that offers an integration platform for sellers and marketplaces allowing them to sell their products across multiple channels.
+This is an API developed in Python for the olist challenge.
 
-The Olist development team consists of developers who love what they do. Our agile development processes and our search for the best development practices provide a great environment for professionals who like to create quality software in good company.
 
-We are always looking for good programmers who love to improve their work. We give preference to small teams with qualified professionals over large teams with average professionals.
+# Work environment
 
-This repository contains a problem used to evaluate candidate skills. It's important to notice that satisfactorily solving the problem is just a part of what will be evaluated. We also consider other programming disciplines like documentation, testing, commit timeline, design and coding best practices.
+**Operating system**: Windows 10  
+**IDE**: Pycharm 2021.2.2  
+**Frameworks/libraries**: Flask, Flask-SQLAlchemy  
+**Database**: SQLite
 
-Hints:
 
-* Carefully read the specification to understand all the problem and artifact requirements before starting, if you don't understand something tell us;
-* Check the recommendations and reference material at the end of this specification;
-* We appreciate simplicity, so create a good project setup that will help us in your evaluation;
-* Please make tests ... we appreciate tests <3... tests make the world better.
+# Installation
 
-## How to participate
-
-1. Make a fork of this repository on Github. If you can't create a public fork of this project, make a private repository (bitbucket/gitlab/github offers free private repos) and add read permission for one of these users below:
-    * [tech-hiring on github](https://github.com/tech-hiring);
-    * [tech-hiring on bitbucket](https://bitbucket.org/tech-hiring);
-    * [tech-hiring on gitlab](https://gitlab.com/tech-hiring).
-2. Follow the instructions of README.md (this file);
-3. Deploy your project on a hosting service (we recommend [Heroku](https://heroku.com));
-4. Apply for the position at our [career page](https://olist.gupy.io/) with:
-    * Link to the fork on Github (or bitbucket/gitlab);
-    * Link to the deployed project in a hosting service.
-
-## Specification
-
-You should implement an application for a library to store book and authors data.
-
-**This application must provide an HTTP REST API to attend the requirements.**
-
-### 1. Receive a CSV with authors and import to database
-
-Given a CSV file with many authors (more than a million), you need to build a command to import the data into the database. The CSV file will have the following format:
+1. Rename the file `example.env` to `.env` and set your custom flask SECRET_KEY  
+2. Clone or download this repository, go to the main folder and type this commands
 
 ```
-name
-Luciano Ramalho
-Osvaldo Santana Neto
-David Beazley
-Chetan Giridhar
-Brian K. Jones
-J.K Rowling
+pip install -r requirements.txt
+flask db create_db
+flask db import_authors authors.csv
+flask run
+```
+Server will run at: http://localhost:5000/ 
+
+
+# Testing
+
+After the installation, type this command to run all the tests
+```
+python -m pytest tests/ -vv
 ```
 
-Each author record in the database must have the following fields:
 
-* id (self-generated)
-* name
+# API Documentation
 
-You need to store the authors' data to complement the book data that will be stored afterward (see item #3).
+## Authors endpoint
 
-_Extra tip: If you use Django Framework you can do something like this..._
-
+#### Routes
 ```
-python manage.py import_authors authors.csv
+/authors  # Get all authors data. Method: GET
 ```
 
-### 2. Expose authors' data in an endpoint
+#### Parameters	
 
-This endpoint needs to return a paginated list with the authors' data. Optionally the authors can be searched by name.
+``` page``` **_optional_** **Integer** Parameter to specify which page to query. default=1    
+``` name``` **_optional_** **String** Parameter to filter author by name.
 
-### 3. CRUD (Create, Read, Update and Delete) of books
 
-You need to implement these actions in your API:
-
-* Create a book
-* Read book's data
-* Update book's data
-* Delete book's data
-
-Each book record has the fields:
-
-* id (self-generated)
-* name
-* edition
-* publication_year
-* authors (more than one author can write a book)
-
-To retrieve a book (in easy mode) we can filter by 4 fields (or a composition of these four):
-
-* name
-* publication_year
-* edition
-* author
-
-But these 4 filters are optional. It must be possible to navigate all the books' data without any filter.
-
-To create a book you need to send this payload (in json format) below:
+#### Requests example in Python code
 
 ```
-{
- "name": // Name of the book;
- "edition": // Edition number;
- "publication_year": // Publication year of the book;
- "authors": // List of author ids, same ids of previous imported data
+authors_page_one = requests.get('http://127.0.0.1:5000/authors').json()
+authors_page_ten = requests.get('http://127.0.0.1:5000/authors', params={'page': 10}).json()
+single_author = requests.get('http://127.0.0.1:5000/authors', params={'name': 'George Owell'}).json()
+```
+
+#### Response format 
+
+```
+  "authors": {"id": "Author Name"}
+```
+
+#### authors_page_one
+```
+ {
+  "pages": {
+    "current_page": 1,
+    "max_authors_per_page": 100,
+    "total_pages": 1,
+    "total_authors": 10
+  },
+  "authors": {
+    "1": "Luciano Ramalho",
+    "2": "Osvaldo Santana Neto",
+    "3": "David Beazley",
+    "4": "Chetan Giridhar",
+    "5": "Brian K. Jones",
+    "6": "J.K Rowling",
+    "7": "Emil Cioran",
+    "8": "George Orwell",
+    "9": "Stephen King",
+    "10": "John Green"
+    }
 }
 ```
 
-## Project Requirements:
+#### single_author
+`{"8": "George Orwell"}`
 
-* Provide a working environment with your project (eg. Heroku)
-* Application must be written in Python or Go.
-* Python
-    * Use Python >= 3.5
-    * Choose any Python web framework you want to solve the problem
-    * Use PEP-8 for code style
-    * [Python Coding Style](http://docs.python-guide.org/en/latest/writing/style/)
-* Go
-    * Go >= 1.10
-    * [Effective Go](https://golang.org/doc/effective_go.html)
-* Every text or code must be in English
-* Write the project documentation containing:
-    * Description;
-    * Installing (setup) and testing instructions;
-    * If you provide a [docker](https://www.docker.com/) solution for setup, ensure it works without docker too.
-    * Brief description of the work environment used to run this project (Computer/operating system, text editor/IDE, libraries, etc).
-* Provide API documentation (in English);
-* Variables, code and strings must be all in English.
 
-## Recommendations
+# CRUD books endpoint
 
-* Write tests! Please make tests ... we appreciate tests <3... tests make the world better;
-* Practice the [12 Factor-App](http://12factor.net) concepts;
-* Use [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) design principles;
-* Use programming good practices;
-* Use [git best practices](https://www.git-tower.com/learn/git/ebook/en/command-line/appendix/best-practices), with clear messages (written in English);
-* Be aware when modeling the database;
-* Be careful with REST API details. They can bite you!
+## Create
 
-**Have fun!**
+#### Route 
+
+```
+/books  # Method: POST
+```
+
+#### JSON Payload format
+
+```
+{
+ "name": book_name                     # Name of the book
+ "edition": book_edition               # Edition number
+ "publication_year": book_year         # Publication year of the book;
+ "authors": [author_id, author_id]     # List of author ids, same ids of previous imported data
+}
+```
+
+#### POST example in Python code
+
+```
+book_data = {
+    "name": 'Animal Farm',                  # Name of the book
+    "edition": 452284244,                   # Edition number
+    "publication_year": 1945,               # Publication year of the book
+    "authors": [8]                          # List of author ids, same ids of previous imported data
+}
+
+response = requests.post('http://127.0.0.1:5000/books', json=book_data)
+print(response.json())         # {'Success': 'Book added'}
+
+```
+
+## Read 
+
+#### Route 
+
+```
+/books  # Method: GET
+```
+
+#### Parameters	
+
+`page` **_optional_** **Integer** Parameter to specify which page to query. default=1   
+`name` **_optional_** **String** Parameter to filter books by name  
+`author` **_optional_** **String** Parameter to filter books by author  
+`year` **_optional_** **Integer** Parameter to filter books by year  
+`edition` **_optional_** **Integer** Parameter to filter books by edition  
+
+
+#### Requests example in Python code
+
+```
+all_books = requests.get('http://127.0.0.1:5000/books').json()
+george_books = requests.get('http://127.0.0.1:5000/books', params={'author': 'George Orwell'}).json()
+```
+
+#### all_books
+```
+{
+  "pages": {
+    "current_page": 1, 
+    "max_books_per_page": 100, 
+    "total_pages": 1, 
+    "total_books": 3
+  }, 
+  "books": [
+  {
+      "id": 1, 
+      "name": "Animal Farm", 
+      "edition": 452284244, 
+      "publication_year": 1945, 
+      "authors": "George Orwell"
+    }, 
+    {
+      "id": 2, 
+      "name": "Fluent Python", 
+      "edition": 11111, 
+      "publication_year": 2015, 
+      "authors": "Luciano Ramalho"
+    }, 
+    {
+      "id": 3, 
+      "name": "The Trouble With Being Born", 
+      "edition": 2222, 
+      "publication_year": 1973, 
+      "authors": "Emil Cioran"
+    }
+    ]
+}
+```
+
+#### george_books
+```
+{
+  "books": [
+    {
+      "id": 1, 
+      "name": "Animal Farm", 
+      "edition": 452284244, 
+      "publication_year": 1945, 
+      "authors": "George Orwell"
+    }
+  ]
+}
+```
+
+## Update
+
+You can get the book_id in the `/books` route.
+#### Route 
+
+```
+/books/<book_id>  # Method: PUT
+```
+
+#### Requests example in Python code
+
+Send a Json payload with the fields you want to update.
+
+```
+book_id = 3
+new_data = {"edition": 5555}
+update_book = requests.put(f'http://127.0.0.1:5000/books/{book_id}', json=new_data).json()
+print(update_book)    #  {"Success": "Book edited"}
+```
+
+## Delete
+
+You can get the book_id in the `/books` route.
+
+#### Route 
+
+```
+/books/<book_id>  # Method: DELETE
+```
+
+#### Requests example in Python code
+
+```
+book_id = 3
+delete_book = requests.delete(f'http://127.0.0.1:5000/books/{book_id}').json()
+print(delete_book)   ## {"Success": "Book deleted"}
+```
+
