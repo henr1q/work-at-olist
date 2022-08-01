@@ -9,7 +9,7 @@ api_bp = Blueprint('api_bp', __name__)
 @api_bp.route('/', methods=['GET'])
 def index():
     # TODO: fix this
-    return {"Docs": "{github place holder}"}
+    return {"Docs": "https://github.com/henr1q/work-at-olist"}
 
 
 @api_bp.route('/authors', methods=['GET'])
